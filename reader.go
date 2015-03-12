@@ -1,4 +1,4 @@
-package mmdb
+package maxminddb
 
 import (
 	"bytes"
@@ -76,7 +76,7 @@ func FromBytes(buffer []byte) (*Reader, error) {
 	reader := &Reader{buffer: buffer, decoder: decoder, Metadata: metadata, ipv4Start: 0}
 
 	reader.ipv4Start, err = reader.startNode()
-	fmt.Println("TEST", unsafe.Sizeof(reader))
+	fmt.Println("TEST", unsafe.Sizeof(reader), "YE", unsafe.Sizeof(buffer))
 	log.Println("TEST", unsafe.Sizeof(reader))
 	return reader, err
 }
