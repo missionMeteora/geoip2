@@ -1,4 +1,4 @@
-package maxminddb
+package mmdb
 
 import (
 	"encoding/binary"
@@ -485,6 +485,10 @@ func (d *decoder) decodeUint128(size uint, offset uint) (*big.Int, uint, error) 
 	val.SetBytes(d.buffer[offset:newOffset])
 
 	return val, newOffset, nil
+}
+
+func (d *decoder) decodeStructKey(offset uint) (string, uint, error) {
+	return d.decodeKeyString(offset)
 }
 
 func uintFromBytes(prefix uint64, uintBytes []byte) uint64 {

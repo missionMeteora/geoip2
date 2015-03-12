@@ -1,11 +1,14 @@
-package maxminddb
+package mmdb
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net"
 	"reflect"
+	"unsafe"
 )
 
 const dataSectionSeparatorSize = 16
@@ -38,6 +41,15 @@ type Metadata struct {
 	RecordSize               uint              `maxminddb:"record_size"`
 }
 
+func Open(file string) (*Reader, error) {
+	bytes, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return FromBytes(bytes)
+}
+
 // FromBytes takes a byte slice corresponding to a MaxMind DB file and returns
 // a Reader structure or an error.
 func FromBytes(buffer []byte) (*Reader, error) {
@@ -50,7 +62,7 @@ func FromBytes(buffer []byte) (*Reader, error) {
 	metadataStart += len(metadataStartMarker)
 	metadataDecoder := decoder{buffer, uint(metadataStart)}
 
-	var metadata Metadata
+	// var metadata Metadata
 
 	rvMetdata := reflect.ValueOf(&metadata)
 	_, err := metadataDecoder.decode(uint(metadataStart), rvMetdata)
@@ -64,7 +76,8 @@ func FromBytes(buffer []byte) (*Reader, error) {
 	reader := &Reader{buffer: buffer, decoder: decoder, Metadata: metadata, ipv4Start: 0}
 
 	reader.ipv4Start, err = reader.startNode()
-
+	fmt.Println("TEST", unsafe.Sizeof(reader))
+	log.Println("TEST", unsafe.Sizeof(reader))
 	return reader, err
 }
 
