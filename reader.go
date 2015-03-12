@@ -5,10 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net"
 	"reflect"
-	"unsafe"
 )
 
 const dataSectionSeparatorSize = 16
@@ -62,7 +60,7 @@ func FromBytes(buffer []byte) (*Reader, error) {
 	metadataStart += len(metadataStartMarker)
 	metadataDecoder := decoder{buffer, uint(metadataStart)}
 
-	// var metadata Metadata
+	var metadata Metadata
 
 	rvMetdata := reflect.ValueOf(&metadata)
 	_, err := metadataDecoder.decode(uint(metadataStart), rvMetdata)
@@ -76,8 +74,6 @@ func FromBytes(buffer []byte) (*Reader, error) {
 	reader := &Reader{buffer: buffer, decoder: decoder, Metadata: metadata, ipv4Start: 0}
 
 	reader.ipv4Start, err = reader.startNode()
-	fmt.Println("TEST", unsafe.Sizeof(reader), "YE", unsafe.Sizeof(buffer))
-	log.Println("TEST", unsafe.Sizeof(reader))
 	return reader, err
 }
 
